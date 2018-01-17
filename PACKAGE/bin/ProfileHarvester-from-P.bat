@@ -17,11 +17,11 @@ del err.txt
 del out.txt
 del %IEDUCG_OUT_NAME%
 del %IEDUCG_ERR_NAME%
-"P:\Computers\Projects\IntegratorEduClientGui\bin\IntegratorEduClientGui.exe" 1>C:\%IEDUCG_OUT_NAME% 2>C:\%IEDUCG_ERR_NAME%
+"P:\Computers\Projects\ProfileHarvester\ProfileHarvester.exe" 1>C:\%IEDUCG_OUT_NAME% 2>C:\%IEDUCG_ERR_NAME%
 rename %IEDUCG_OUT_NAME% %computername%-out.txt
-move /y %computername%-out.txt P:\Computers\Projects\IntegratorEduClientGui\bin\
+move /y %computername%-out.txt P:\Computers\Projects\ProfileHarvester\
 rename %IEDUCG_ERR_NAME% %computername%-err.txt
-move /y %computername%-err.txt P:\Computers\Projects\IntegratorEduClientGui\bin\
+move /y %computername%-err.txt P:\Computers\Projects\ProfileHarvester\
 net use /d G:
 net use /d P:
 net use /d T:

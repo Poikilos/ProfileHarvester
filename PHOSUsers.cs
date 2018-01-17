@@ -24,8 +24,8 @@ namespace ProfileHarvester
         public static string[] RemoteRoots_FullNameThenSlash=new String[] {@"T:\",@"G:\Home\"};//public static string StudentsRoot_FullNameThenSlash=@"T:\";
         public static string sComputerName_DONOTUSEDIRECTLY=null;
         public static Random rand=null;
-        public static string sLocalProfilesRoot_FullName=@"C:\Documents and Settings";//fixed in static constructor //formerly sUserRoot
-        public static DirectoryInfo diLocalProfilesRoot=new DirectoryInfo(@"C:\Documents and Settings");//IF "C:\Users" EXISTS, changes to that in static constructor //formerly diBase
+        public static string sLocalProfilesRoot_FullName=@"C:\Documents and Settings";  // updated in static constructor //formerly sUserRoot
+        public static DirectoryInfo diLocalProfilesRoot=new DirectoryInfo(@"C:\Documents and Settings");  // IF "C:\Users" EXISTS, changes to that in static constructor //formerly diBase
         public static readonly string[] sarrSystemCreatedFolders_ToLower=new string[]{@"c:\documents and settings",@"c:\documents and settings\all users"};
         //public static readonly string[] sarrSystemCreatedFolders_UnderUserProfile_ToLower=new string[]{@"documents",@"pictures",@"videos",@"my documents",@"my documents\my pictures",@"documents\my music",@"my documents\my music",@"documents\my pictures",@"my documents\my videos",@"documents\my videos"}; //"documents\my *" are under XP All Users folder
         public static readonly string[] sarrSystemCreatedFolders_UnderUserProfile_ToLower=new string[]{@"documents",@"pictures",@"videos",@"music"}; //"documents\my *" are under XP All Users folder

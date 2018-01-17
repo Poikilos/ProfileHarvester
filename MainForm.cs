@@ -355,42 +355,77 @@ namespace ProfileHarvester {
             //NOTE: COMPUTERNAME can usually be detected by parsing <drive>:\WINNT\Debug\NetSetup.LOG or <drive>:\Windows\Debug\NetSetup.LOG
             bool bResetStatistics=true;
             bool bRecursive=true;
-            //bForEachuser_DocsToSameUserOnT=true;
-            //bForEachUser_LepidToCurrentlyLoggedInUserH=false;
-            string userProfileSubFolderName=@"%USERPROFILE%";
-            ArrayList ifInRootMustEndWithAnyOfStrings = new ArrayList();
-            int mask_count = 0;
-            if (localProfilesMasksTextBox.Text.Length>0) {
-	            localProfilesMasksTextBox.Text = localProfilesMasksTextBox.Text.Trim();
-	            string[] masks = localProfilesMasksTextBox.Text.Split(new char[] {','});
-	            foreach (string mask in masks) {
-	            	ifInRootMustEndWithAnyOfStrings.Add(mask.Trim());
+            if (bMove) this.lblBusy.Text = "Moving local documents...";
+            else this.lblBusy.Text = "Copying local documents...";
+            try {
+	            //bForEachuser_DocsToSameUserOnT=true;
+	            //bForEachUser_LepidToCurrentlyLoggedInUserH=false;
+	            string userProfileSubFolderName = @"%USERPROFILE%";
+	            ArrayList ifInRootMustEndWithAnyOfStrings = new ArrayList();
+	            int mask_count = 0;
+	            bool ok_enable = true;
+	            if (localProfilesMasksTextBox.Text.Length>0) {
+		            localProfilesMasksTextBox.Text = localProfilesMasksTextBox.Text.Trim();
+		            string[] masks = localProfilesMasksTextBox.Text.Split(new char[] {','});
+		            foreach (string mask_original in masks) {
+		            	string mask = mask_original.Trim();
+		            	if (mask.StartsWith("*")) mask = mask.Substring(1);
+		            	if (mask.Length>0) {
+		            		if (!mask.Contains("*")) {
+		            			ifInRootMustEndWithAnyOfStrings.Add(mask);
+		            		}
+		            		else {
+		            			MessageBox.Show("Cannot continue since can only use masks with one star at beginning for now (such as *.prel)--cannot use '"+mask_original+"'");
+		            			ok_enable = false;
+		            		}
+		            	}
+		            	else {
+		            		MessageBox.Show("Cannot continue since can't copy all (plain * not allowed in masks) due to system files in profile root--cannot use '"+mask_original+"'");
+		            		ok_enable = false;
+		            	}
+		            }
+		            mask_count = ifInRootMustEndWithAnyOfStrings.Count;
 	            }
-	            mask_count = masks.Length;
+	            if (ok_enable) {
+	            	DialogResult dr = DialogResult.Yes;
+		            if (mask_count < 1) {
+		            	dr = MessageBox.Show("NOTE: the mask_count is " + mask_count.ToString() + ", so no files will be copied from USERPROFILE root (only subfolders). Continue anyway?", "ProfileHarvester", MessageBoxButtons.YesNo);
+		            }
+		            if (doNotDetectOtherRemoteRootsCheckBox.Checked) {
+		                if (!remoteProfilesTextBox.Text.EndsWith(sDirSep))
+		                    remoteProfilesTextBox.Text+=sDirSep;
+		                ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, bRecursive, this.localDocsTextBox.Text, Path.Combine(remoteProfilesTextBox.Text,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, null); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
+		                bResetStatistics=false;
+		                
+		                ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, false, userProfileSubFolderName, Path.Combine(remoteProfilesTextBox.Text,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, ifInRootMustEndWithAnyOfStrings); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
+		            }
+		            else {
+		                foreach (string sRemoteRoot_Original in PHOSUsers.RemoteRoots_FullNameThenSlash) {
+		                    //TODO: %MYDOCUMENTS%\Adobe\Premiere Elements\10.0
+		                    string sRemoteRoot=sRemoteRoot_Original;
+		                    if (!sRemoteRoot.EndsWith(sDirSep))
+		                        sRemoteRoot+=sDirSep;
+		                    ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, bRecursive, this.localDocsTextBox.Text, Path.Combine(sRemoteRoot,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, null); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
+		                    bResetStatistics=false;
+		                    ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, false, userProfileSubFolderName, Path.Combine(sRemoteRoot,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, ifInRootMustEndWithAnyOfStrings); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
+		                }
+		            }
+	            }
             }
-            if (mask_count < 1) {
-            	MessageBox.Show("NOTE: the mask_count is " + mask_count.ToString() + ", so no files will be copied from USERPROFILE root (only subfolders)");
-            }
-            if (doNotDetectOtherRemoteRootsCheckBox.Checked) {
-                if (!remoteProfilesTextBox.Text.EndsWith(sDirSep))
-                    remoteProfilesTextBox.Text+=sDirSep;
-                ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, bRecursive, this.localDocsTextBox.Text, Path.Combine(remoteProfilesTextBox.Text,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, null); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
-                bResetStatistics=false;
-                
-                ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, false, userProfileSubFolderName, Path.Combine(remoteProfilesTextBox.Text,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, ifInRootMustEndWithAnyOfStrings); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
-            }
-            else {
-                foreach (string sRemoteRoot_Original in PHOSUsers.RemoteRoots_FullNameThenSlash) {
-                    //TODO: %MYDOCUMENTS%\Adobe\Premiere Elements\10.0
-                    string sRemoteRoot=sRemoteRoot_Original;
-                    if (!sRemoteRoot.EndsWith(sDirSep))
-                        sRemoteRoot+=sDirSep;
-                    ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, bRecursive, this.localDocsTextBox.Text, Path.Combine(sRemoteRoot,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, null); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
-                    bResetStatistics=false;
-                    ForEachUser_DoActions(bResetStatistics,PHOpInfo.OpCode_Sync, false, userProfileSubFolderName, Path.Combine(sRemoteRoot,remoteDocsTextBox.Text), bMove, true, createIfNotOnDestCheckBox.Checked, ifInRootMustEndWithAnyOfStrings); //PHOSUsers.StudentsRoot_FullNameThenSlash+@"%USERNAME%\Recovered Files\from-computer-"+PHOSUsers.MachineName_Safe_ElseRandom_DONOTUSEDIRECTLY_Use_ComputerName_GetOrGen_MethodInstead(),true);
-                }
+            catch (Exception exn) {
+	            this.lblBusy.Text = "Failed";
+            	lbMain.Items.Add(REM_THIS(exn.ToString()));
             }
         }//end LocalDocumentsToNetworkDriveIfExists
+        
+        string REM_THIS(string newline_separated_values_s) {
+        	string[] sarr = newline_separated_values_s.Split(new char[] {'\n'});
+        	string result = "";
+        	foreach (string s in sarr) {
+        		result += "REM " + s;
+        	}
+        	return result;
+        }
         
         void LocalTempToNetworkDriveIfExists(bool bMove) {
             bool bRecursive=false;
@@ -698,7 +733,7 @@ namespace ProfileHarvester {
             //Process procNow=Process.Start(psiNow);
             //procNow.WaitForExit();
             //File.Delete(sDelBat);
-            this.lblBusy.Text="Working...";
+            this.lblBusy.Text="Clearing tmp...";
             this.lblBusy.Visible=true;
             Application.DoEvents();
             //int iFilesDone=0;
@@ -741,10 +776,18 @@ namespace ProfileHarvester {
         
         void MoveTmpFilesToTheOwnersTmpOnTToolStripMenuItemClick(object sender, EventArgs e) {
             bool bResetStats=true;
-            foreach (string sRemoteRootThenSlash in PHOSUsers.RemoteRoots_FullNameThenSlash) {
-                //there are multiple remote roots since there is: \\Fbmfs1\main\home and \\Fbmfs1\student
-                ForEachFile_DoActions_ONLYMOVESFILESINTMPSOFAR(bResetStats);
-                bResetStats=false;
+            try {
+	            foreach (string sRemoteRootThenSlash in PHOSUsers.RemoteRoots_FullNameThenSlash) {
+	            	this.lblBusy.Text = "Moving files in tmp by owner...";
+	                //there are multiple remote roots since there is: \\Fbmfs1\main\home and \\Fbmfs1\student
+	                ForEachFile_DoActions_ONLYMOVESFILESINTMPSOFAR(bResetStats);
+	                bResetStats = false;
+	            }
+            	this.lblBusy.Text = "Done";
+            }
+            catch (Exception exn) {
+            	this.lblBusy.Text = "Failed";
+            	lbMain.Items.Add(REM_THIS(exn.ToString()));
             }
         }//end MoveTmpFilesToTheOwnersTmpOnTToolStripMenuItemClick
         
