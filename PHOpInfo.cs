@@ -24,6 +24,7 @@ namespace ProfileHarvester {
         
         public const int OpCode_None=0;
         public const int OpCode_Sync=1;
+        //TODO: replace ifInRootMustEndWithAnyOfStrings with: public string[] localProfilesMasks=null;
         public bool bRecursive=true;
         
         public static string RetryBatchFile_FullName=@"C:\tmp\"+MainForm.sMyName+"-retry-MoveLocalDocumentsToNetworkDriveIfExists-"+Environment.MachineName+".bat";//fixed in static constructor

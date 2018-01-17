@@ -359,18 +359,18 @@ namespace ProfileHarvester {
             //bForEachUser_LepidToCurrentlyLoggedInUserH=false;
             string userProfileSubFolderName=@"%USERPROFILE%";
             ArrayList ifInRootMustEndWithAnyOfStrings = new ArrayList();
-            ifInRootMustEndWithAnyOfStrings.Add(".dxf");
-            ifInRootMustEndWithAnyOfStrings.Add(".py");
-            ifInRootMustEndWithAnyOfStrings.Add(".pyw");
-            ifInRootMustEndWithAnyOfStrings.Add(".html");
-            ifInRootMustEndWithAnyOfStrings.Add(".htm");
-            ifInRootMustEndWithAnyOfStrings.Add(".doc");
-            ifInRootMustEndWithAnyOfStrings.Add(".docx");
-            ifInRootMustEndWithAnyOfStrings.Add(".blend");
-            ifInRootMustEndWithAnyOfStrings.Add(".blend1");
-            ifInRootMustEndWithAnyOfStrings.Add(".prel");
-            ifInRootMustEndWithAnyOfStrings.Add(".dxf~");
-            ifInRootMustEndWithAnyOfStrings.Add(".prfpset");
+            int mask_count = 0;
+            if (localProfilesMasksTextBox.Text.Length>0) {
+	            localProfilesMasksTextBox.Text = localProfilesMasksTextBox.Text.Trim();
+	            string[] masks = localProfilesMasksTextBox.Text.Split(new char[] {','});
+	            foreach (string mask in masks) {
+	            	ifInRootMustEndWithAnyOfStrings.Add(mask.Trim());
+	            }
+	            mask_count = masks.Length;
+            }
+            if (mask_count < 1) {
+            	MessageBox.Show("NOTE: the mask_count is " + mask_count.ToString() + ", so no files will be copied from USERPROFILE root (only subfolders)");
+            }
             if (doNotDetectOtherRemoteRootsCheckBox.Checked) {
                 if (!remoteProfilesTextBox.Text.EndsWith(sDirSep))
                     remoteProfilesTextBox.Text+=sDirSep;

@@ -4,6 +4,9 @@ formerly ProfileHarvester
 
 
 ## Changes
+(2018-01-16)
+* Made the filter for files in root configurable (via new LocalProfileMasks text box) and expanded defaults (formerly dxf, py, pyw, html, htm, doc, docx, blend, blend1, prel, dxf~, prfpset)
+  (dxf~ are temp files leftover by LibreCAD that could be helpful if someone forgot to save or LibreCAD or computer failed before save)
 (2017-09-26)
 * write exceptions to lbNow using this to-one-line code: string sNew = Regex.Replace(sOld, @"\t|\n|\r", "");
 * eliminate dependency on RetroEngine
