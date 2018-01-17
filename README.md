@@ -1,6 +1,6 @@
 # ProfileHarvester
 Get (only relevant) files all those random users saved to that business or school computer.
-formerly IntegratorEduClientGui
+formerly ProfileHarvester
 
 
 ## Changes
@@ -22,22 +22,22 @@ formerly IntegratorEduClientGui
   HOMES_ROOT, sUserNameNow, @"\\Recovered Files\\Adobe\\Premiere Elements\\10.0"
 * for consisency, instead of saving Documents directly to Recovered Files,
   CHANGE move Documents to home drive so it goes from
-	%USERPROFILE%\Documents`
-	to
-	Recovered Files\Documents`
+    %USERPROFILE%\Documents`
+    to
+    Recovered Files\Documents`
 * resolved by requiring elevation (apparently)
   * Delete C:\tmp\*.* at 8:15am or run with elevated privileges if missed
   * Fix glitch where always says "0 user(s)" have files
 * so all other recovery is same structure, use Recovered Files as equivalent to USERPROFILE during transfer, except add junk from C:\tmp to "Recovered Files" as well
-		* change tmp (same for UserProgWrap)
-		* change Temp (same for UserProgWrap)
+        * change tmp (same for UserProgWrap)
+        * change Temp (same for UserProgWrap)
   
 (2012-05-16)
 * On Windows 7, admin priveleges are required for accessing registry, so compling needs new manifest with requestedPriveleges section with
 ```xml
-	<requestedExecutionLevel level="requireAdministrator"/>
+    <requestedExecutionLevel level="requireAdministrator"/>
  ```
-	* Since this is required, "runas" behavior in program may or may not be needed, but its there.
+    * Since this is required, "runas" behavior in program may or may not be needed, but its there.
 
 ## Known Issues
 * Instead of collecting PNG sequences, use ffmpeg to create `"PNGs Recovered by FileHarvester " + sDateSuffix + ".avi"`
@@ -67,17 +67,17 @@ formerly IntegratorEduClientGui
 #### Tasks to move to other projects
 * deduplication
 * Tasks for start of day (in lieu of logoff script):
-	* send blender a save signal
-	* close blender nicely
-	* wait for UserProgWrap.exe to exit
-	* logout
+    * send blender a save signal
+    * close blender nicely
+    * wait for UserProgWrap.exe to exit
+    * logout
 * For each user, change desktop to y if equals x
-	* e.g. if `"%USERPROFILENOW%\Local Settings\Application Data\Microsoft\Wallpaper1.bmp"` is same as HP Wallpaper AFTER UNCOMPRESSED
-	* MUST compare pixel by pixel since Windows automatically decompresses wallpaper of any type to Wallpaper1.bmp
+    * e.g. if `"%USERPROFILENOW%\Local Settings\Application Data\Microsoft\Wallpaper1.bmp"` is same as HP Wallpaper AFTER UNCOMPRESSED
+    * MUST compare pixel by pixel since Windows automatically decompresses wallpaper of any type to Wallpaper1.bmp
 For each user
     * Recover @"%ALLUSERSPROFILE%\Documents\Projects\UserProgWrap\bin\" -- contains folders containing untitled.blend if user typed a name in the first box when saving in blender
       TO "T:\" + SafeOwner(diSubFolderInBin) + "\Recovered files\Blender Foundation Blender"
-	replace
-	* %USERPROFILE%\Application Data\Microsoft\Wallpaper1.bmp
-		with 
-		if is identical to C:\WINDOWS\HPQ800h.bmp (hp wallpaper)
+    replace
+    * %USERPROFILE%\Application Data\Microsoft\Wallpaper1.bmp
+        with 
+        if is identical to C:\WINDOWS\HPQ800h.bmp (hp wallpaper)
