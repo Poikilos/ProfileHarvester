@@ -1,5 +1,5 @@
 # ProfileHarvester
-Get (only relevant) files all those random users saved to that business or school computer.
+Get (only relevant) files from all those random users saved to that business or school computer.
 formerly IntegratorEduClientGUI
 
 ## Changes
